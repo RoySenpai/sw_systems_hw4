@@ -5,7 +5,7 @@ CFLAGS = -Wall -g
 
 all: graph
 
-graph: main.o edges.o algo.o nodes.o
+graph: main.o edges.o algo.o nodes.o graph.o
 	$(CC) $(CFLAGS) $^ -o $@
 
 %.o: %.c graph.h
