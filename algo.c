@@ -53,8 +53,6 @@ pnode priortyqueue_pop(pqNode *head) {
 }
 
 void priortyqueue_push(pqNode *head, pqNode queueNode) {
-	pqNode curr = NULL;
-
 	if ((*head) == NULL)
 	{
 		(*head) = queueNode;
@@ -68,7 +66,7 @@ void priortyqueue_push(pqNode *head, pqNode queueNode) {
 		return;
 	}
 
-	curr = *head;
+	pqNode curr = *head;
 
 	while (curr->next != NULL)
 	{
@@ -83,9 +81,9 @@ void priortyqueue_push(pqNode *head, pqNode queueNode) {
 }
 
 void cmd_algo_shortest_path(pnode head) {
+	pnode currNode = head, prevNode = NULL;
 	int *dijkstraArr = NULL;
 	int src = 0, dest = 0, numberOfNodes = 0, dsrc = 0, ddest = 0;
-	pnode currNode = head, prevNode = NULL;
 
 	scanf("%d%d", &src, &dest);
 
@@ -128,34 +126,33 @@ void cmd_algo_shortest_path(pnode head) {
 
 void cmd_algo_TSP(pnode head) {
 	pnode currNode = head;
-	int *arr = NULL;
+	int *TSP_cities = NULL;
 	int numberOfCities = 0, totalNodes = 0, res = INT_MAX;
 
 	scanf("%d", &numberOfCities);
 
-	arr = (int*) malloc(numberOfCities * sizeof(int));
+	TSP_cities = (int*) malloc(numberOfCities * sizeof(int));
 
-	if (arr == NULL)
+	if (TSP_cities == NULL)
 	{
 		perror("malloc");
 		exit(errno);
 	}
 
 	for (int i = 0; i < numberOfCities; ++i)
-		scanf("%d", &(*(arr+i)));
+		scanf("%d", &(*(TSP_cities+i)));
 
 	while (currNode != NULL)
 	{
-		currNode->seq_num = totalNodes;
+		currNode->seq_num = totalNodes++;
 		currNode = currNode->next;
-		++totalNodes;
 	}
 
-	algo_check_permutations(head, arr, 0, (numberOfCities - 1), totalNodes, &res);
+	algo_check_permutations(head, TSP_cities, 0, (numberOfCities - 1), totalNodes, &res);
 
 	printf("TSP shortest path: %d \n", (res < INT_MAX) ? res:-1);
 
-	free(arr);
+	free(TSP_cities);
 }
 
 void algo_swap(int *x, int *y) {
@@ -165,8 +162,8 @@ void algo_swap(int *x, int *y) {
 }
 
 void algo_dijkstra(pnode currNode, int *arr, int len) {
-	pqNode currQueueNode = priortyqueue_create_node(currNode, 1);
-	pqNode* pQueue = &currQueueNode;
+	pqNode queue_first_node = priortyqueue_create_node(currNode, 1);
+	pqNode* pQueue = &queue_first_node;
 	pedge currEdge = NULL;
 
 	while ((*pQueue) != NULL)
@@ -176,14 +173,7 @@ void algo_dijkstra(pnode currNode, int *arr, int len) {
 
 		while (currEdge != NULL)
 		{
-			/* Prevent memory leaks */
-			if ((currEdge->endpoint->seq_num >= len) || (currNode->seq_num >= len))
-			{
-				currEdge = currEdge->next;
-				continue;
-			}
-
-			if ((*(arr + currNode->seq_num) + currEdge->weight) < *(arr + currEdge->endpoint->seq_num))
+			if ((currEdge->endpoint->seq_num < len) && (currNode->seq_num < len) && ((*(arr + currNode->seq_num) + currEdge->weight) < *(arr + currEdge->endpoint->seq_num)))
 			{
 				*(arr + currEdge->endpoint->seq_num) = *(arr + currNode->seq_num) + currEdge->weight;
 				priortyqueue_push(pQueue, priortyqueue_create_node(currEdge->endpoint, *(arr + currEdge->endpoint->seq_num)));
@@ -192,8 +182,6 @@ void algo_dijkstra(pnode currNode, int *arr, int len) {
 			currEdge = currEdge->next;
 		}
 	}
-
-	free(currQueueNode);
 }
 
 void algo_check_permutations(pnode head, int *arr, int start, int end, int numberOfNodes, int *res) {
@@ -209,16 +197,14 @@ void algo_check_permutations(pnode head, int *arr, int start, int end, int numbe
 		return;
 	}
 
-	int *dijkstraArr = NULL;
-	int dummyvar = 0;
-
 	pnode currNode = node_find(head, *arr);
 
 	/* Prevent memory leaks */
 	if (currNode->seq_num >= numberOfNodes)
 		return;
 
-	dijkstraArr = (int *)malloc(numberOfNodes * sizeof(int));
+	int dummyvar = 0;
+	int *dijkstraArr = (int *)malloc(numberOfNodes * sizeof(int));
 
 	if (dijkstraArr == NULL)
 	{
@@ -233,18 +219,11 @@ void algo_check_permutations(pnode head, int *arr, int start, int end, int numbe
 
 	for (int i = 1; i <= end; ++i)
 	{
-		algo_dijkstra(currNode, dijkstraArr, numberOfNodes);
-
 		pnode searchNode = node_find(head, *(arr + i));
 
-		/* Prevent memory leaks */
-		if (searchNode == NULL)
-			continue;
+		algo_dijkstra(currNode, dijkstraArr, numberOfNodes);
 
-		else if ((searchNode->seq_num) >= numberOfNodes)
-			continue;
-
-		else if (*(dijkstraArr + (searchNode->seq_num)) == INT_MAX)
+		if (((searchNode->seq_num) < numberOfNodes) && *(dijkstraArr + (searchNode->seq_num)) == INT_MAX)
 		{
 			free(dijkstraArr);
 			return;

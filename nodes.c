@@ -70,42 +70,34 @@ void node_insert(pnode *head, pnode node_to_insert) {
 }
 
 void node_remove_edges_from(pnode curretNode) {
-    pedge curr = curretNode->edges;
-    pedge prev = curr;
+    pedge curr = curretNode->edges, prev = NULL;
 
     while (curr != NULL)
     {
-        curr = curr->next;
-        free(prev);
         prev = curr;
+        curr = curr->next;
+
+        free(prev);
     }
 }
 
 bool node_remove_edge_to(pnode curretNode, int node_num) {
-    pedge currEdge = curretNode->edges;
-    pedge prevEdge = currEdge;
+    pedge currEdge = curretNode->edges, prevEdge = NULL;
 
     if (currEdge != NULL)
     {
         if (currEdge->endpoint->node_num == node_num)
         {
-            curretNode->edges = currEdge->next;
-
             free(prevEdge);
-
             return true;
         }
 
         while (currEdge->next != NULL)
         {
-            prevEdge = currEdge->next;
-
             if (currEdge->next->endpoint->node_num == node_num)
             {
-                currEdge->next = prevEdge->next;
-
+                prevEdge = currEdge->next;
                 free(prevEdge);
-
                 return true;
             }
 

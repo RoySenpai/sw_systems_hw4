@@ -15,6 +15,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "graph.h"
@@ -23,10 +24,11 @@ int main() {
     /* Contains the list of nodes. */
     pnode nodes_list = NULL;
 
+    /* Needed variables */
     char choice = '\0';
     int ret = 0, dummyvar = 0;
 
-    while(ret != EOF)
+    while (ret != EOF)
     {
         ret = scanf("%c", &choice);
 
@@ -35,16 +37,15 @@ int main() {
             case 'A':
             {
                 if (nodes_list != NULL)
+                {
                     cmd_delete_graph(&nodes_list);
+                    nodes_list = NULL;
+                }
 
                 scanf("%d", &dummyvar);
 
-                pnode nodes = NULL;
-
                 for (int i = (dummyvar - 1); i >= 0; --i)
-                    nodes = node_create(i, nodes);
-
-                nodes_list = nodes;
+                    nodes_list = node_create(i, nodes_list);
 
                 break;
             }

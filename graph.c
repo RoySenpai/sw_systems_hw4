@@ -1,3 +1,21 @@
+/*
+ *  Software Systems Course Assignment 4
+ *  Copyright (C) 2023  Roy Simanovich
+
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -8,14 +26,15 @@ void cmd_build_graph(pnode *head) {
 
     scanf("%d", &inptInt);
 
-    pnode currNode = node_find(*head, inptInt);
-    pnode destNode = NULL;
+    pnode currNode = node_find(*head, inptInt), destNode = NULL;
     pedge prevEdge = NULL;
 
     while(scanf("%d", &inptInt))
     {
         destNode = node_find(*head, inptInt);
+
         scanf("%d", &inptInt);
+
         prevEdge = edge_create(inptInt, destNode, prevEdge);
     }
 
@@ -23,8 +42,7 @@ void cmd_build_graph(pnode *head) {
 }
 
 void cmd_insert_node(pnode *head) {
-    pnode currNode = NULL;
-    pnode destNode = NULL;
+    pnode currNode = NULL, destNode = NULL;
     pedge prevEdge = NULL;
 
     int inptInt = 0;
@@ -51,7 +69,9 @@ void cmd_insert_node(pnode *head) {
     while (scanf("%d", &inptInt) == 1)
     {
         destNode = node_find(*head, inptInt);
+
         scanf("%d", &inptInt);
+
         prevEdge = edge_create(inptInt, destNode, prevEdge);
     }
 
@@ -103,6 +123,12 @@ void cmd_delete_node(pnode *head) {
 void cmd_print_graph(pnode head) {
     pedge currEdge = NULL;
 
+    if (head == NULL)
+    {
+        printf("The graph is empty!\n");
+        return;
+    }
+
     while (head != NULL)
     {
         currEdge = head->edges;
@@ -131,9 +157,7 @@ void cmd_print_graph(pnode head) {
 }
 
 void cmd_delete_graph(pnode *head) {
-    /* Prevent memory leaks*/
-    pnode currNode = (*head);
-    pnode prevNode = NULL;
+    pnode currNode = (*head), prevNode = NULL;
 
     while(currNode != NULL)
     {
@@ -141,6 +165,7 @@ void cmd_delete_graph(pnode *head) {
         currNode = currNode->next;
 
         node_remove_edges_from(prevNode);
+
         free(prevNode);
     }
 }
