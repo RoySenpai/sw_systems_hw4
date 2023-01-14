@@ -173,7 +173,7 @@ void algo_dijkstra(pnode currNode, int *arr, int len) {
 
 		while (currEdge != NULL)
 		{
-			if ((currEdge->endpoint->seq_num < len) && (currNode->seq_num < len) && ((*(arr + currNode->seq_num) + currEdge->weight) < *(arr + currEdge->endpoint->seq_num)))
+			if (((*(arr + currNode->seq_num) + currEdge->weight) < *(arr + currEdge->endpoint->seq_num)))
 			{
 				*(arr + currEdge->endpoint->seq_num) = *(arr + currNode->seq_num) + currEdge->weight;
 				priortyqueue_push(pQueue, priortyqueue_create_node(currEdge->endpoint, *(arr + currEdge->endpoint->seq_num)));
@@ -199,10 +199,6 @@ void algo_check_permutations(pnode head, int *arr, int start, int end, int numbe
 
 	pnode currNode = node_find(head, *arr);
 
-	/* Prevent memory leaks */
-	if (currNode->seq_num >= numberOfNodes)
-		return;
-
 	int dummyvar = 0;
 	int *dijkstraArr = (int *)malloc(numberOfNodes * sizeof(int));
 
@@ -212,18 +208,18 @@ void algo_check_permutations(pnode head, int *arr, int start, int end, int numbe
 		exit(errno);
 	}
 
-	for (int i = 0; i < numberOfNodes; ++i)
-		*(dijkstraArr + i) = INT_MAX;
-
-	*(dijkstraArr + currNode->seq_num) = 0;
-
 	for (int i = 1; i <= end; ++i)
 	{
 		pnode searchNode = node_find(head, *(arr + i));
 
+		for (int j = 0; j < numberOfNodes; ++j)
+			*(dijkstraArr + j) = INT_MAX;
+
+		*(dijkstraArr + currNode->seq_num) = 0;
+
 		algo_dijkstra(currNode, dijkstraArr, numberOfNodes);
 
-		if (((searchNode->seq_num) < numberOfNodes) && *(dijkstraArr + (searchNode->seq_num)) == INT_MAX)
+		if (*(dijkstraArr + (searchNode->seq_num)) == INT_MAX)
 		{
 			free(dijkstraArr);
 			return;
@@ -232,15 +228,10 @@ void algo_check_permutations(pnode head, int *arr, int start, int end, int numbe
 		currNode = node_find(head, *(arr + i));
 
 		dummyvar += *(dijkstraArr + currNode->seq_num);
-
-		for (int j = 0; j < numberOfNodes; ++j)
-			*(dijkstraArr + j) = INT_MAX;
-
-		*(dijkstraArr + currNode->seq_num) = 0;
 	}
+
+	free(dijkstraArr);
 
 	if (dummyvar < *res && dummyvar != 0)
 		*res = dummyvar;
-
-	free(dijkstraArr);
 }
