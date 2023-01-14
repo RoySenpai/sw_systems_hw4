@@ -82,21 +82,24 @@ void node_remove_edges_from(pnode curretNode) {
 }
 
 bool node_remove_edge_to(pnode curretNode, int node_num) {
-    pedge currEdge = curretNode->edges, prevEdge = NULL;
+    pedge currEdge = curretNode->edges, prevEdge = currEdge;
 
     if (currEdge != NULL)
     {
         if (currEdge->endpoint->node_num == node_num)
         {
+            curretNode->edges = currEdge->next;
             free(prevEdge);
             return true;
         }
 
         while (currEdge->next != NULL)
         {
+            prevEdge = currEdge->next;
+
             if (currEdge->next->endpoint->node_num == node_num)
             {
-                prevEdge = currEdge->next;
+                currEdge->next = prevEdge->next;
                 free(prevEdge);
                 return true;
             }

@@ -25,12 +25,12 @@ int main() {
     pnode nodes_list = NULL;
 
     /* Needed variables */
-    char choice = '\0';
+    unsigned char choice = '\0';
     int ret = 0, dummyvar = 0;
 
     while (ret != EOF)
     {
-        ret = scanf("%c", &choice);
+        ret = scanf(" %c", &choice);
 
         switch (choice)
         {
@@ -88,6 +88,8 @@ int main() {
 
             default: break;
         }
+
+        choice = '\0';
     }
 
     cmd_delete_graph(&nodes_list);
